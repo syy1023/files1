@@ -1,0 +1,44 @@
+#!/bin/bash
+while true
+do
+#获取数目，保证钱够交易
+result2=`/home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf  getbalance|grep ddd|cut -d":" -f2|sed 's/\,//g'`
+if [ "$result2" > "1" ]
+then
+        echo "current num of money is $result2"
+        str="error"
+        for i in `cat currency`
+        do
+#转账
+         echo "start to transfer $i"
+         command1=`/home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf    sendtoaddress  1MQ6VLNDzFbqv1YpCDEd8Tou8ud4HyRhdg $i 1`
+#取交易id
+         /home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf gettransaction $command1
+#取确认次数
+        result=`/usr/local/bin/bullockchain-cli -conf=/home/xmx/bitcoin.conf gettransaction $command1|grep confirmations|awk '{print $2}'|sed 's/\,//g'`
+        if [ $result -gt 6 ]
+        then
+        sleep 60
+        echo "start to transfer second"
+        /home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf sendtoaddrese 1MQ6VLNDzFbqv1YpCDEd8Tou8ud4HyRhdg  ddd 1
+  # else
+        elif [ $result -lt 6 ]
+        then
+                while  [ $result -le 6 ]
+                        do
+                        result=`/home/xmx/bullockchain-cli -conf=/home/xmx/bitcoin.conf gettransaction $command1|grep confirmations|awk '{print $2}'|sed 's/\,//g'`
+                        echo "$result"
+                        sleep 10
+                        done
+                        echo "confirmations over 6 now"
+        elif [ $result =~ $str]
+        then
+         echo "error happend"
+        sleep 1000
+        fi
+        done
+elif [ "$result2" < "1" ]
+then  
+   echo "ddd less than 1"
+fi
+done
