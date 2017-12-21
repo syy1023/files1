@@ -1,11 +1,16 @@
 #!/bin/bash
+#获取所有币种，存放在currency文件中
+result3=`bullockchain-cli -conf=/home/xmx/bitcoin.conf getbalance|awk  '{print $1}'|sed 's/\"//g'|sed 's/\://g'|sed 's/[{}]//g'|grep -v '^$'`
+echo "$$$$$$$$$$$$$$$$$$$$$$"
+echo "当前所有币种为 \n $result3"
 while true
 do
-#获取数目，保证钱够交易
-result2=`/home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf  getbalance|grep ddd|cut -d":" -f2|sed 's/\,//g'`
+#获取DCN数目，保证钱够交易
+result2=`/home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf  getbalance|grep DCN|cut -d":" -f2|sed 's/\,//g'`
 if [ "$result2" > "1" ]
 then
-        echo "current num of money is $result2"
+        echo "***********************************"
+        echo "current num of DCN money is $result2"
         str="error"
         for i in `cat currency`
         do
@@ -20,7 +25,7 @@ then
         then
         sleep 60
         echo "start to transfer second"
-        /home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf sendtoaddrese 1MQ6VLNDzFbqv1YpCDEd8Tou8ud4HyRhdg  ddd 1
+        /home/xmx/bullockchain-cli  -conf=/home/xmx/bitcoin.conf sendtoaddrese 1MQ6VLNDzFbqv1YpCDEd8Tou8ud4HyRhdg  DCN 1
   # else
         elif [ $result -lt 6 ]
         then
@@ -32,13 +37,15 @@ then
                         done
                         echo "confirmations over 6 now"
         elif [ $result =~ $str]
-        then
+        then 
          echo "error happend"
         sleep 1000
         fi
         done
 elif [ "$result2" < "1" ]
-then  
-   echo "ddd less than 1"
-fi
+then
+   echo "DCN less than 1"
+fi  
 done
+
+
