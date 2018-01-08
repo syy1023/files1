@@ -1,0 +1,47 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+import string
+import random
+import requests
+import hashlib
+import json
+from collections import OrderedDict
+
+
+secret = "df4971ef8eaeb484bf713e5ced245509c06833f1"
+url = "http://test.api.dac.ngochain.cn/order/create"
+
+def splice(x):
+    return '='.join(x)
+
+def addSign(obj, secret):
+
+    # 正序拼接
+    kobj = sorted(obj.items(), key = lambda pair: pair[0])
+ 
+    signStr=''
+    for v in kobj:
+        signStr+=v[0]+'='+str(v[1])
+   
+    sign = hashlib.md5() # 申明一个hashlib对象
+    sign.update(signStr +'secret='+ secret) # 填入源串
+    obj["sign"] = sign.hexdigest() # 生成校验码
+
+
+if __name__ == "__main__":
+    obj= {
+        "amount":"100",
+"body":360,
+"detail":355,
+"key":"dbf713e5ced2455",
+"out_trade_no":360,
+"payees":'[{"tid":"1","money": "999","willbill":"18845333223"}]',
+"repay_time":"2018-01-01 00:00:00"}
+
+    addSign(obj, secret)
+    #print obj
+    header = {'Content-Type': 'application/json'}
+    res = requests.post(url, json=obj, headers=header)
+
+
+    print res.json()
